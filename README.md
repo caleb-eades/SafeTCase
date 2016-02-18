@@ -33,8 +33,33 @@ public class ExampleTest extends SafeTCase {
 ## Reference: 
 
 * `Class getClass(String fullyQualifiedClassName)`
+    * Return: Class of `fullyQualifiedClassName` if exists
+    * Params: 
+        * `fullyQualifiedClassName` : e.g. `"com.calebeades.java.test.SampleClass"`
 * `Object getInstance(String fullyQualifiedClassName, Object... args)`
+    * Return: Instance of `fullyQualifiedClassname`, if exists
+    * Params: 
+        * `fullyQualifiedClassName` : e.g. `"com.calebeades.java.test.SampleClass"`
+        * `args`                    : if applicable
 * `Object getFieldValue(Object parent, String fieldName)`
+    * Return: Value of field `fieldName`, if exists
+    * Params: 
+        * `parent`                  : Object to search for field
+        * `fieldName`               : FieldName to search
 * `Object getFieldValue(Class parent, String fieldName)`
+    * Return: Value of field `fieldName`, if exists
+    * Params: 
+        * `parent`                  : Class to search for field
+        * `fieldName`               : FieldName to search
 * `Object invokeMethod(Object parent, String methodName, Object... args)`
+    * Return: Return value of method `methodName`, if exists
+    * Params:
+        * `parent`                  : Object to search for method
+        * `methodName`              : MethodName to execute
+        * `args`                    : If applicable
 * `Object invokeMethod(Class parent, String methodName, Object... args)`
+    * Return: Return value of method `methodName`, if exists
+    * Params:
+        * `parent`                  : Class to search for method
+        * `methodName`              : MethodName to execute
+        * `args`                    : If applicable
