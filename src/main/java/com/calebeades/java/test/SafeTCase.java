@@ -101,12 +101,8 @@ public abstract class SafeTCase extends TestCase {
 	}
 
 	public Object invokeMethod(Object parent, String methodName, Object... args) {
-		// Create array of classes for args
-		Class[] classes = new Class[args.length];
-		for (int i = 0; i < args.length; i++) {
-			Class argsClass = args[i].getClass();
-			classes[i] = argsClass;
-		}
+		Class[] classes = getArgumentClasses(args);
+
 		// Get the method
 		Method method = null;
 		try {
@@ -115,7 +111,7 @@ public abstract class SafeTCase extends TestCase {
 			StringBuilder sb = new StringBuilder("Class " + parent.getClass().getCanonicalName() + " does not have method " + methodName + "(");
 			String prefix = "";
 			for (Class item : classes) {
-				sb.append(prefix + item.getSimpleName());
+				sb.append(prefix + item.getCanonicalName());
 				prefix = ", ";
 			}
 			sb.append(")");
@@ -138,12 +134,8 @@ public abstract class SafeTCase extends TestCase {
 	}
 
 	public Object invokeMethod(Class parent, String methodName, Object... args) {
-		// Create array of classes for args
-		Class[] classes = new Class[args.length];
-		for (int i = 0; i < args.length; i++) {
-			Class argsClass = args[i].getClass();
-			classes[i] = argsClass;
-		}
+		Class[] classes = getArgumentClasses(args);
+
 		// Get the method
 		Method method = null;
 		try {
@@ -152,7 +144,7 @@ public abstract class SafeTCase extends TestCase {
 			StringBuilder sb = new StringBuilder("Class " + parent.getCanonicalName() + " does not have method " + methodName + "(");
 			String prefix = "";
 			for (Class item : classes) {
-				sb.append(prefix + item.getSimpleName());
+				sb.append(prefix + item.getCanonicalName());
 				prefix = ", ";
 			}
 			sb.append(")");
@@ -172,5 +164,14 @@ public abstract class SafeTCase extends TestCase {
 			return null;
 		}
 		return result;
+	}
+
+	private Class[] getArgumentClasses(Object[] args) {
+		Class[] classes = new Class[args.length];
+		for (int i = 0; i < args.length; i++) {
+			Class argsClass = args[i].getClass();
+			classes[i] = argsClass;
+		}
+		return classes;
 	}
 }
