@@ -1,4 +1,4 @@
-package com.Bilbo0fBagEnd.java.test;
+package com.calebeades.java.test;
 
 public class SampleClass {
 	
