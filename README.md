@@ -30,6 +30,11 @@ public class ExampleTest extends SafeTCase {
 }
 ```
 
-## Doc: 
+## Reference: 
 
-
+* `Class getClass(String fullyQualifiedClassName)`
+* `Object getInstance(String fullyQualifiedClassName, Object... args)`
+* `Object getFieldValue(Object parent, String fieldName)`
+* `Object getFieldValue(Class parent, String fieldName)`
+* `Object invokeMethod(Object parent, String methodName, Object... args)`
+* `Object invokeMethod(Class parent, String methodName, Object... args)`
