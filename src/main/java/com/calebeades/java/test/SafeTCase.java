@@ -58,6 +58,7 @@ public abstract class SafeTCase extends TestCase {
 			return null;
 		} catch (java.lang.reflect.InvocationTargetException e) {
 			assertNotNull("Class " + fullyQualifiedClassName + " has an error in designated constructor", instance);
+			e.printStackTrace();
 			return null;
 		}
 		return instance;
@@ -130,6 +131,7 @@ public abstract class SafeTCase extends TestCase {
 			return null;
 		} catch (java.lang.reflect.InvocationTargetException e) {
 			assertNotNull("An error occurred in method " + methodName + " of " + parent.getClass().getCanonicalName(), result);
+			e.printStackTrace();
 			return null;
 		}
 		return result;
@@ -166,6 +168,7 @@ public abstract class SafeTCase extends TestCase {
 			return null;
 		} catch (java.lang.reflect.InvocationTargetException e) {
 			assertNotNull("An error occurred in method " + methodName + " of " + parent.getCanonicalName(), result);
+			e.printStackTrace();
 			return null;
 		}
 		return result;
