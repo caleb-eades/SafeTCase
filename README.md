@@ -37,7 +37,7 @@ public class ExampleTest extends SafeTCase {
     * Params: 
         * `fullyQualifiedClassName` : e.g. `"com.calebeades.java.test.SampleClass"`
 * `Object getInstance(String fullyQualifiedClassName, Object... args)`
-    * Return: Instance of `fullyQualifiedClassname`, if exists
+    * Return: Instance of `fullyQualifiedClassname`, using constructor which takes `args`, if exists
     * Params: 
         * `fullyQualifiedClassName` : e.g. `"com.calebeades.java.test.SampleClass"`
         * `args`                    : if applicable
