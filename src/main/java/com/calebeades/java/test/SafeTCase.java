@@ -25,19 +25,9 @@ public abstract class SafeTCase extends TestCase {
 
 	public Object getInstance(String fullyQualifiedClassName, Object... args) {
 		// Create array of classes for args
-		Class[] classes = new Class[args.length];
-		for (int i = 0; i < args.length; i++) {
-			Class argsClass = args[i].getClass();
-			classes[i] = argsClass;
-		}
+		Class[] classes = getArgumentClasses(args);
 		// Get the class from its name
-		Class c = null;
-		try {
-			c = Class.forName(fullyQualifiedClassName);
-		} catch (java.lang.ClassNotFoundException e) {
-			assertNotNull("Class " + fullyQualifiedClassName + " does not exist", c);
-			return null;
-		}
+		Class c = getClass(fullyQualifiedClassName);
 		// Get the constructor
 		Constructor constructor = null;
 		try {
@@ -64,25 +54,48 @@ public abstract class SafeTCase extends TestCase {
 		return instance;
 	}
 
+	// As tempting as it is, do not try to combine these two methods.
+	// Doing so will cause getFieldValue(Object, String) to fail 
 	public Object getFieldValue(Object parent, String fieldName) {
-		Field field = null;
-		try {
-			field = parent.getClass().getDeclaredField(fieldName);
-		} catch (java.lang.NoSuchFieldException e) {
-			assertNotNull("Class " + parent.getClass().getCanonicalName() + " does not have designated field", field);
-			return null;
-		}
-		Object value = null;
-		try {
-			value = field.get(parent);
-		} catch (java.lang.IllegalAccessException e) {
-			assertNotNull("Field " + fieldName + " does not have public access in " + parent.getClass().getCanonicalName(), value);
-			return null;
-		}
-		return value;
+		Field field = getField(parent.getClass(), fieldName);
+		return getValueFromField(parent, field);
+	}
+	public Object getFieldValue(Class parent, String fieldName) {
+		Field field = getField(parent, fieldName);
+		return getValueFromField(parent, field);
 	}
 
-	public Object getFieldValue(Class parent, String fieldName) {
+	// As tempting as it is, do not try to combine these two methods.
+	// Doing so will cause invokeMethod(Object, String, Object...) to fail 
+	public Object invokeMethod(Object parent, String methodName, Object... args) {
+		Class[] classes = getArgumentClasses(args);
+
+		// Get the method
+		Method method = getMethod(parent.getClass(), methodName, classes);
+
+		// Call the method for result
+		return getMethodResult(parent, parent.getClass(), method, args);
+	}
+	public Object invokeMethod(Class parent, String methodName, Object... args) {
+		Class[] classes = getArgumentClasses(args);
+
+		// Get the method
+		Method method = getMethod(parent, methodName, classes);
+
+		// Call the method for result
+		return getMethodResult(parent, parent, method, args);
+	}
+
+	private Class[] getArgumentClasses(Object[] args) {
+		Class[] classes = new Class[args.length];
+		for (int i = 0; i < args.length; i++) {
+			Class argsClass = args[i].getClass();
+			classes[i] = argsClass;
+		}
+		return classes;
+	}
+
+	private Field getField(Class parent, String fieldName) {
 		Field field = null;
 		try {
 			field = parent.getDeclaredField(fieldName);
@@ -90,53 +103,21 @@ public abstract class SafeTCase extends TestCase {
 			assertNotNull("Class " + parent.getCanonicalName() + " does not have designated field", field);
 			return null;
 		}
+		return field;
+	}
+
+	private Object getValueFromField(Object parent, Field field) {
 		Object value = null;
 		try {
 			value = field.get(parent);
 		} catch (java.lang.IllegalAccessException e) {
-			assertNotNull("Field " + fieldName + " does not have public access in " + parent.getCanonicalName(), value);
+			assertNotNull("Field " + field.getName() + " does not have public access in " + parent.getClass().getCanonicalName(), value);
 			return null;
 		}
 		return value;
 	}
 
-	public Object invokeMethod(Object parent, String methodName, Object... args) {
-		Class[] classes = getArgumentClasses(args);
-
-		// Get the method
-		Method method = null;
-		try {
-			method = parent.getClass().getMethod(methodName, classes);
-		} catch (java.lang.NoSuchMethodException e) {
-			StringBuilder sb = new StringBuilder("Class " + parent.getClass().getCanonicalName() + " does not have method " + methodName + "(");
-			String prefix = "";
-			for (Class item : classes) {
-				sb.append(prefix + item.getCanonicalName());
-				prefix = ", ";
-			}
-			sb.append(")");
-			assertNotNull(sb.toString(), method);
-			return null;
-		}
-		// Call the method for result
-		Object result = null;
-		try {
-			result = method.invoke(parent, args);
-		} catch (java.lang.IllegalAccessException e) {
-			assertNotNull("Method " + methodName + " does not have public access in " + parent.getClass().getCanonicalName(), result);
-			return null;
-		} catch (java.lang.reflect.InvocationTargetException e) {
-			assertNotNull("An error occurred in method " + methodName + " of " + parent.getClass().getCanonicalName(), result);
-			e.printStackTrace();
-			return null;
-		}
-		return result;
-	}
-
-	public Object invokeMethod(Class parent, String methodName, Object... args) {
-		Class[] classes = getArgumentClasses(args);
-
-		// Get the method
+	private Method getMethod(Class parent, String methodName, Class... classes) {
 		Method method = null;
 		try {
 			method = parent.getMethod(methodName, classes);
@@ -151,27 +132,21 @@ public abstract class SafeTCase extends TestCase {
 			assertNotNull(sb.toString(), method);
 			return null;
 		}
-		// Call the method for result
+		return method;
+	}
+
+	private Object getMethodResult(Object parent, Class parentClass, Method method, Object... args) {
 		Object result = null;
 		try {
 			result = method.invoke(parent, args);
 		} catch (java.lang.IllegalAccessException e) {
-			assertNotNull("Method " + methodName + " does not have public access in " + parent.getCanonicalName(), result);
+			assertNotNull("Method " + method.getName() + " does not have public access in " + parentClass.getCanonicalName(), result);
 			return null;
 		} catch (java.lang.reflect.InvocationTargetException e) {
-			assertNotNull("An error occurred in method " + methodName + " of " + parent.getCanonicalName(), result);
+			assertNotNull("An error occurred in method " + method.getName() + " of " + parentClass.getCanonicalName(), result);
 			e.printStackTrace();
 			return null;
 		}
 		return result;
-	}
-
-	private Class[] getArgumentClasses(Object[] args) {
-		Class[] classes = new Class[args.length];
-		for (int i = 0; i < args.length; i++) {
-			Class argsClass = args[i].getClass();
-			classes[i] = argsClass;
-		}
-		return classes;
 	}
 }
