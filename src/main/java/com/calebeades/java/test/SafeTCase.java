@@ -11,6 +11,7 @@ public abstract class SafeTCase extends TestCase {
         super( testName );
     }
 
+    // Return the Class represented by the ClassName
 	public Class getClass(String fullyQualifiedClassName) {
 		// Get the class from its name
 		Class c = null;
@@ -23,6 +24,7 @@ public abstract class SafeTCase extends TestCase {
 		return c;
 	}
 
+	// Get and instance of a Class using constructor with args
 	public Object getInstance(String fullyQualifiedClassName, Object... args) {
 		// Create array of classes for args
 		Class[] classes = getArgumentClasses(args);
@@ -56,10 +58,13 @@ public abstract class SafeTCase extends TestCase {
 
 	// As tempting as it is, do not try to combine these two methods.
 	// Doing so will cause getFieldValue(Object, String) to fail 
+	// Get the value stored in a field from an Object
 	public Object getFieldValue(Object parent, String fieldName) {
 		Field field = getField(parent.getClass(), fieldName);
 		return getValueFromField(parent, field);
 	}
+	// Get the value stored in a field from a Class
+	// Requires that the field be static
 	public Object getFieldValue(Class parent, String fieldName) {
 		Field field = getField(parent, fieldName);
 		return getValueFromField(parent, field);
@@ -67,6 +72,7 @@ public abstract class SafeTCase extends TestCase {
 
 	// As tempting as it is, do not try to combine these two methods.
 	// Doing so will cause invokeMethod(Object, String, Object...) to fail 
+	// Get the result of a method on an Object
 	public Object invokeMethod(Object parent, String methodName, Object... args) {
 		Class[] classes = getArgumentClasses(args);
 
@@ -76,6 +82,8 @@ public abstract class SafeTCase extends TestCase {
 		// Call the method for result
 		return getMethodResult(parent, parent.getClass(), method, args);
 	}
+	// Get the result of a method on a Class
+	// Requires that the method be static
 	public Object invokeMethod(Class parent, String methodName, Object... args) {
 		Class[] classes = getArgumentClasses(args);
 
@@ -86,6 +94,9 @@ public abstract class SafeTCase extends TestCase {
 		return getMethodResult(parent, parent, method, args);
 	}
 
+	// Helper methods
+	// Create an array of Classes from an array of objects
+	// Necessary for getting constructors and methods with argument signatures
 	private Class[] getArgumentClasses(Object[] args) {
 		Class[] classes = new Class[args.length];
 		for (int i = 0; i < args.length; i++) {
@@ -95,6 +106,7 @@ public abstract class SafeTCase extends TestCase {
 		return classes;
 	}
 
+	// Get a field from a class
 	private Field getField(Class parent, String fieldName) {
 		Field field = null;
 		try {
@@ -106,6 +118,8 @@ public abstract class SafeTCase extends TestCase {
 		return field;
 	}
 
+	// Get the value stored in a field on a Class or Object
+	// Getting a value from a Class requires that the field be static
 	private Object getValueFromField(Object parent, Field field) {
 		Object value = null;
 		try {
@@ -117,6 +131,7 @@ public abstract class SafeTCase extends TestCase {
 		return value;
 	}
 
+	// Get a method from a Class
 	private Method getMethod(Class parent, String methodName, Class... classes) {
 		Method method = null;
 		try {
@@ -135,6 +150,8 @@ public abstract class SafeTCase extends TestCase {
 		return method;
 	}
 
+	// Get the result from a method on a Class or Object
+	// Getting a result from a Class requires that the method be static
 	private Object getMethodResult(Object parent, Class parentClass, Method method, Object... args) {
 		Object result = null;
 		try {
